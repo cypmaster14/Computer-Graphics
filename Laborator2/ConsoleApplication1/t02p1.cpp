@@ -172,34 +172,58 @@ void Display4(double a, double b) {
 //Trisectoarea lui Longchamps: 
 void Display5(double a) {
 
-	double xmax, ymax;
+	double xmin, ymax;
 	double x, y;
 	double ratia = 0.05;
 	double pi = 4 * atan(1.0);
 
-	xmax = (a / (4 * 1 - 3)) + 1;
-	ymax = ((a * 25) / (4 * 1 - 3)) + 1;
-
+	xmin = 10000000;
+	ymax = -1000000;
 	for (double t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
-		x = (a / (4 * pow(cos(t), 2) - 3));
-		y = ((a*tan(t)) / (4 * pow(cos(t), 2) - 3));
+		x = a / (4 * cos(t)*cos(t) - 3);
+		y = (a* (sin(t) / cos(t))) / (4 * cos(t) * cos(t) - 3);
+		if (x < 0 && y > 0) {
+			xmin = (x < xmin) ? x : xmin;
+			ymax = (y > ymax) ? y : ymax;
+		}
 
-		xmax = (xmax > x) ? xmax : x;
-		ymax = (ymax > y) ? ymax : y;
 	}
 
-	xmax = xmax*1.1;
-	ymax = ymax*1.1;
+	xmin *= -1.1;
+	ymax *= 1.1;
 
-	glColor3f(1.0, 0.1, 0.1);
+	//Folosite pentru a uni extremitatile ca in imaginea din tema
+	double xs, ys, xd, yd;
+	xs = 100000;
+	yd = -100000;
+
+	glColor3f(0.2, 0.15, 0.88);
 	glBegin(GL_LINE_STRIP);
-	for (double t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
-		x = (a / (4 * pow(cos(t), 2) - 3));
-		y = ((a*tan(t)) / (4 * pow(cos(t), 2) - 3));
+	for (double t = - pi / 2 + ratia ; t < pi/2; t += ratia) {
+		x = a / (4 * cos(t)*cos(t) - 3) / xmin;
+		y = (a* (sin(t) / cos(t))) / (4 * cos(t) * cos(t) - 3) / ymax;
+		if (x < 0 && y>0) {
+			glVertex2f(x , y );
+			if (x < xs) {
+				xs = x;
+				ys = y;
+			}
 
-		glVertex2f(x / xmax, y / ymax);
+			if (y > yd) {
+				yd = y;
+				xd = x;
+			}
+		}
 	}
 	glEnd();
+
+	//Uneste extremitatile
+	glBegin(GL_LINE_STRIP);
+		glVertex2f(xs, ys);
+		glVertex2f(xs, yd);
+		glVertex2f(xd, yd);
+	glEnd();
+
 }
 
 
