@@ -113,10 +113,6 @@ void Display3() {
 	double ymax = 1;
 	double xmax = 100;
 	double ratia = 0.05;
-	for (double x = 0 + ratia; x < 100; x += ratia) {
-		double distance = nearestInteger(x);
-		ymax = (ymax > distance) ? ymax : distance;
-	}
 
 	ymax *= 1.05;
 	xmax *= 1.1;
@@ -144,7 +140,8 @@ void Display4(double a, double b) {
 	double ratia = 0.05;
 
 	xmax = 2 * (a + b) - 1;
-	ymax = 2 * (a + b) + 1;
+	ymax = 2 * (a + b) - 1;
+	printf("Xmax:%f\tYmax:%f\n", xmax, ymax);
 
 	double x, y;
 	for (double t = -pi + ratia; t < pi; t += ratia) {
@@ -153,6 +150,9 @@ void Display4(double a, double b) {
 		xmax = (xmax > x) ? xmax : x;
 		ymax = (ymax > y) ? ymax : y;
 	}
+
+	printf("Xmax:%f\tYmax:%f\n", xmax, ymax);
+
 
 	xmax = xmax* 1.1;
 	ymax = ymax * 1.1;
@@ -163,7 +163,7 @@ void Display4(double a, double b) {
 	for (double t = -pi + ratia; t < pi; t += ratia) {
 		x = 2 * (a*cos(t) + b)*cos(t);
 		y = 2 * (a*cos(t) + b)*sin(t);
-		glVertex2f(x / xmax, y / ymax);
+		glVertex2f(x / xmax, y );
 	}
 	glEnd();
 
@@ -172,13 +172,13 @@ void Display4(double a, double b) {
 //Trisectoarea lui Longchamps: 
 void Display5(double a) {
 
-	double xmin, ymax;
+	double pi = 4 * atan(1);
+	double ratia = 0.01;
+	bool color = true;
+	double xmin = 100000;
+	double ymax = -100000;
 	double x, y;
-	double ratia = 0.05;
-	double pi = 4 * atan(1.0);
 
-	xmin = 10000000;
-	ymax = -1000000;
 	for (double t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
 		x = a / (4 * cos(t)*cos(t) - 3);
 		y = (a* (sin(t) / cos(t))) / (4 * cos(t) * cos(t) - 3);
@@ -189,41 +189,55 @@ void Display5(double a) {
 
 	}
 
-	xmin *= -1.1;
-	ymax *= 1.1;
+	printf("Xmin:%f\tYmax:%f\n", xmin, ymax);
 
-	//Folosite pentru a uni extremitatile ca in imaginea din tema
-	double xs, ys, xd, yd;
-	xs = 100000;
-	yd = -100000;
+	
+	glShadeModel(GL_FLAT);
+	glBegin(GL_TRIANGLE_FAN);
+	glColor3f(1, 0.1, 0.1);
+	glVertex2f(-0.95, 0.97);
 
-	glColor3f(0.2, 0.15, 0.88);
-	glBegin(GL_LINE_STRIP);
-	for (double t = - pi / 2 + ratia ; t < pi/2; t += ratia) {
-		x = a / (4 * cos(t)*cos(t) - 3) / xmin;
-		y = (a* (sin(t) / cos(t))) / (4 * cos(t) * cos(t) - 3) / ymax;
-		if (x < 0 && y>0) {
-			glVertex2f(x , y );
-			if (x < xs) {
-				xs = x;
-				ys = y;
-			}
+	for (double t = -pi / 2 + ratia; t < -pi / 6; t += ratia) {
 
-			if (y > yd) {
-				yd = y;
-				xd = x;
-			}
+		if (fabs(t) == pi / 6) {
+			continue;
 		}
+
+		x = 0.2 / (4 * cos(t) * cos(t) - 3);
+		y = 0.2 * tan(t) / (4 * cos(t) * cos(t) - 3);
+		if (fabs(x) > 1 || fabs(y) > 1 || fabs(y) < 0.25)
+			continue;
+
+		if (color) {
+			glColor3f(1, 0.1, 0.1);
+			color = false;
+		}
+		else {
+			glColor3f(1, 1, 1);
+			color = true;
+		}
+		glVertex2f(x, y);
 	}
+
 	glEnd();
 
-	//Uneste extremitatile
-	glBegin(GL_LINE_STRIP);
-		glVertex2f(xs, ys);
-		glVertex2f(xs, yd);
-		glVertex2f(xd, yd);
-	glEnd();
 
+
+	glBegin(GL_LINE_LOOP);
+	glColor3f(0.2, 0.15, 0.88); // albastru
+	glVertex2f(-0.95, 0.97);
+	for (double t = -pi / 2 + ratia; t < -pi / 6; t += ratia) {
+		if (fabs(t) == pi / 6) {
+			continue;
+		}
+		x = 0.2 / (4 * cos(t) * cos(t) - 3);
+		y = 0.2 * tan(t) / (4 * cos(t) * cos(t) - 3);
+		if (fabs(x) > 1 || fabs(y) > 1)
+			continue;
+		glVertex2f(x, y);
+	}
+
+	glEnd();
 }
 
 
@@ -334,7 +348,7 @@ void Display8(double R, double r) {
 void Display9(double a) {
 	double xmax, ymax, xmin, ymin, rmax, rmin, r1, r2;
 	double pi = 4 * atan(1.0);
-	double ratia = 0.05;
+	double ratia = 0.001;
 	double t;
 	double r;
 	// calculul valorilor maxime/minime ptr. x si y
@@ -347,47 +361,38 @@ void Display9(double a) {
 		rmax = (r > rmax) ? r : rmax;
 	}
 
+	printf("Rmax:%f\n",rmax);
 	rmax *= 1.1;
 
 	// afisarea punctelor propriu-zise precedata de scalare
+
 	glColor3f(1, 0.1, 0.1); // rosu
+
 	glBegin(GL_LINE_STRIP);
-	for (t = -pi / 4 + ratia; t < pi / 4; t += ratia) {
+
+	for (t = pi / 4 - ratia; t > -pi / 4;  t -= ratia) {
 		double x1, y1;
-		r1 = a * sqrt(2 * cos(2 * t)) / rmax;
+		r1 = a*sqrt(2 * cos(2 * t)) / rmax;
 
-		x1 = r1 * cos(t) ;
-		y1 = r1 * sin(t) ;
+		x1 = r1*cos(t);
+		y1 = r1*sin(t);
 		glVertex2f(x1, y1);
+		printf("%f\t%f\n", x1, y1);
+
 	}
-	glEnd();
 
-
-
-	glBegin(GL_LINE_STRIP);
+	printf("\n");
 	for (t = -pi / 4 + ratia; t < pi/ 4 ; t += ratia) {
 		double x2, y2;
 		r2 = -a * sqrt(2 * cos(2 * t)) / rmax;
-		x2 = r2 * cos(t) ;
-		y2 = r2 * sin(t) ;
+
+		x2 = r2 * cos(t);
+		y2 = r2 * sin(t);
 		glVertex2f(x2, y2);
+		printf("%f\t%f\n", x2, y2);
 	}
 	glEnd();
 
-	//uneste extremele din cele 2 jumatati
-	double x1_first, y1_first, x2_first, y2_first;
-	t = -pi / 4 + ratia;
-	r1 = a * sqrt(2 * cos(2 * t)) / rmax;
-	x1_first = r1 * cos(t);
-	y1_first = r1 * sin(t);
-	r2 = -a * sqrt(2 * cos(2 * t)) / rmax;
-	x2_first = r2 * cos(t);
-	y2_first = r2 * sin(t);
-
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(x1_first, y1_first);
-	glVertex2f(x2_first, y2_first);
-	glEnd();
 }
 
 void Display0(double a) {
@@ -442,7 +447,7 @@ void Display(void) {
 		Display3();
 		break;
 	case '4':
-		Display4(3, 2);
+		Display4(0.3, 0.2);
 		break;
 	case '5':
 		Display5(0.2);
