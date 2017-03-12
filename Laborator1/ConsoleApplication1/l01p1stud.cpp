@@ -1,481 +1,349 @@
+// Daca se doreste utilizarea bibliotecii GLUT trebuie
+// inclus fisierul header GL/glut.h (acesta va include
+// la GL/gl.h si GL/glu.h, fisierele header pentru
+// utilizarea bibliotecii OpenGL). Functiile din biblioteca
+// OpenGL sunt prefixate cu gl, cele din GLU cu glu si
+// cele din GLUT cu glut.
+
+// #include <GL/glut.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "glut.h"
 
-// dimensiunea ferestrei in pixeli
-#define dim 300
+#include "glut.h"
 
 unsigned char prevKey;
 
-// concoida lui Nicomede (concoida dreptei)
-// $x = a + b \cdot cos(t), y = a \cdot tg(t) + b \cdot sin(t)$. sau
-// $x = a - b \cdot cos(t), y = a \cdot tg(t) - b \cdot sin(t)$. unde
-// $t \in (-\pi / 2, \pi / 2)$
 void Display1() {
-	double xmax, ymax, xmin, ymin;
-	double a = 1, b = 2;
-	double pi = 4 * atan(1.0);
-	double ratia = 0.05;
-	double t;
+   glColor3f(0.2,0.15,0.88); // albastru
+   glBegin(GL_LINES); // trasarea unei linii
+      glVertex2i(1,1); // coordonatele unui varf
+      glVertex2i(-1,-1);
+   glEnd();
 
-	// calculul valorilor maxime/minime ptr. x si y
-	// aceste valori vor fi folosite ulterior la scalare
-	xmax = a - b - 1;
-	xmin = a + b + 1;
-	ymax = ymin = 0;
-	for (t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
-		double x1, y1, x2, y2;
-		x1 = a + b * cos(t);
-		xmax = (xmax < x1) ? x1 : xmax;
-		xmin = (xmin > x1) ? x1 : xmin;
+   glColor3f(1,0.1,0.1); // rosu
+   glBegin(GL_LINES);
+      glVertex2i(-1,1);
+      glVertex2i(1,-1);
+   glEnd();
 
-		x2 = a - b * cos(t);
-		xmax = (xmax < x2) ? x2 : xmax;
-		xmin = (xmin > x2) ? x2 : xmin;
-
-		y1 = a * tan(t) + b * sin(t);
-		ymax = (ymax < y1) ? y1 : ymax;
-		ymin = (ymin > y1) ? y1 : ymin;
-
-		y2 = a * tan(t) - b * sin(t);
-		ymax = (ymax < y2) ? y2 : ymax;
-		ymin = (ymin > y2) ? y2 : ymin;
-	}
-
-	xmax = (fabs(xmax) > fabs(xmin)) ? fabs(xmax) : fabs(xmin);
-	ymax = (fabs(ymax) > fabs(ymin)) ? fabs(ymax) : fabs(ymin);
-	xmax *= 1.1;
-	ymax *= 1.1;
-
-	// afisarea punctelor propriu-zise precedata de scalare
-	glColor3f(1, 0.1, 0.1); // rosu
-	glBegin(GL_LINE_STRIP);
-	for (t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
-		double x1, y1, x2, y2;
-		x1 = (a + b * cos(t)) / xmax;
-		x2 = (a - b * cos(t)) / xmax;
-		y1 = (a * tan(t) + b * sin(t)) / ymax;
-		y2 = (a * tan(t) - b * sin(t)) / ymax;
-
-		glVertex2f(x1, y1);
-	}
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-	for (t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
-		double x1, y1, x2, y2;
-		x1 = (a + b * cos(t)) / xmax;
-		x2 = (a - b * cos(t)) / xmax;
-		y1 = (a * tan(t) + b * sin(t)) / ymax;
-		y2 = (a * tan(t) - b * sin(t)) / ymax;
-
-		glVertex2f(x2, y2);
-	}
-	glEnd();
+   glBegin(GL_LINES);
+      glVertex2d(-0.5,0);
+      glVertex2d(0.5,0);
+   glEnd();
 }
 
-// graficul functiei 
-// $f(x) = \bar sin(x) \bar \cdot e^{-sin(x)}, x \in \langle 0, 8 \cdot \pi \rangle$, 
 void Display2() {
-	double pi = 4 * atan(1.0);
-	double xmax = 8 * pi;
-	double ymax = exp(1.1);
-	double ratia = 0.05;
-
-	// afisarea punctelor propriu-zise precedata de scalare
-	glColor3f(1, 0.1, 0.1); // rosu
-	glBegin(GL_LINE_STRIP);
-	for (double x = 0; x < xmax; x += ratia) {
-		double x1, y1;
-		x1 = x / xmax;
-		y1 = (fabs(sin(x)) * exp(-sin(x))) / ymax;
-
-		glVertex2f(x1, y1);
-	}
-	glEnd();
+   glColor3f(1,0.1,0.1); // rosu
+   glBegin(GL_LINES); 
+      glVertex2f(1.0,1.0); 
+      glVertex2f(0.9,0.9); 
+      glVertex2f(0.8,0.8); 
+      glVertex2f(0.7,0.7); 
+      glVertex2f(0.6,0.6); 
+      glVertex2f(0.5,0.5); 
+      glVertex2f(-0.5,-0.5); 
+      glVertex2f(-1.0,-1.0);
+   glEnd();
 }
 
-double nearestInteger(double number) {
-	double fractionalPart = number - int(number);
-	if (fractionalPart > 0.5) {
-		return fabs(1.0 - fractionalPart);
-	}
-	return fractionalPart;
-}
-
-//Graficul functiei f(x)
 void Display3() {
-
-	double ymax = 1;
-	double xmax = 100;
-	double ratia = 0.05;
-
-	ymax *= 1.05;
-	xmax *= 1.1;
-
-	glColor3f(1, 0.1, 0.1); // rosu
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(0 / xmax, 1 / ymax);
-	for (double x = 0 + ratia; x <= 100; x += ratia) {
-		double distance = nearestInteger(x);
-		glVertex2f(x / xmax, distance / x / ymax);
-	}
-	glEnd();
+   // trasare puncte GL_POINTS : deseneaza n puncte
+   glColor3f(1,0.1,0.1); // rosu
+   glBegin(GL_POINTS); 
+	  glVertex2f(0.5, 0.5);
+	  glVertex2f(-0.5, 0.5);
+	  glVertex2f(-0.5, -0.5);
+	  glVertex2f(0.5, -0.5);
+   glEnd();
 }
 
-
-//Melcul lui Pascal
-void Display4(double a, double b) {
-
-	double xmax, ymax;
-	double pi = 4 * atan(1.0);
-	double ratia = 0.05;
-
-	xmax = 2 * (a + b) - 1;
-	ymax = 2 * (a + b) - 1;
-
-	double x, y;
-	for (double t = -pi + ratia; t <= pi + ratia*2; t += ratia) {
-		x = 2 * (a*cos(t) + b)*cos(t);
-		y = 2 * (a*cos(t) + b)*sin(t);
-		xmax = (xmax > x) ? xmax : x;
-		ymax = (ymax > y) ? ymax : y;
-	}
-
-	printf("Xmax:%f\tYmax:%f\n", xmax, ymax);
-
-
-	xmax = xmax* 1.1;
-	//depinde de a si b
-	ymax = ymax * 1.7;
-
-	glColor3f(1, 0.1, 0.1); // rosu
-	glBegin(GL_LINE_STRIP);
-
-	for (double t = -pi + ratia; t <= pi + ratia*2; t += ratia) {
-		x = 2 * (a*cos(t) + b)*cos(t);
-		y = 2 * (a*cos(t) + b)*sin(t);
-		glVertex2f(x / xmax, y / ymax);
-	}
-	glEnd();
-
+void Display4() {
+   glColor3f(1,0.1,0.1); // rosu
+   // trasare linie poligonala GL_LINE_STRIP : (v0,v1), (v1,v2), (v_{n-2},v_{n-1})
+   glBegin(GL_LINE_STRIP); 
+      glVertex2f(0.9999, 1.0);
+	  glVertex2f(0.9999, 0.9);
+	  glVertex2f(0.7, 0.7);
+	  glVertex2f(0.7, 0.6);
+   glEnd();
 }
 
-//Trisectoarea lui Longchamps: 
-void Display5(double a) {
-	double pi = 4 * atan(1);
-	double ratia = 0.0055;
-	double x, y;
+void Display5() {
+   glColor3f(1,0.1,0.1); // rosu
+   // trasare linie poligonala inchisa GL_LINE_LOOP : (v0,v1), (v1,v2), (v_{n-1},v0)
+   glBegin(GL_LINE_LOOP); 
+	   glVertex2f(0.9999, 1.0);
+	   glVertex2f(0.9999, 0.9);
+	   glVertex2f(0.7, 0.7);
+	   glVertex2f(0.7, 0.6);
+   glEnd();
+}
 
-	int count = 0;
-	double xx[1000], yy[1000];
-	for (double t = -pi / 2 + ratia; t < -pi / 6; t += ratia) {
-		if (fabs(t) == pi / 6) {
-			continue;
-		}
-		x = 0.2 / (4 * cos(t) * cos(t) - 3);
-		y = 0.2 * tan(t) / (4 * cos(t) * cos(t) - 3);
-		if (fabs(x) > 1 || fabs(y) > 1)
-			continue;
-		xx[count] = x;
-		yy[count] = y;
-		count++;
-	}
+void Display6() {
+   glColor3f(1,0.1,0.1); // rosu
+   // trasare triunghiuri GL_TRIANGLES : (v0,v1,v2), (v3,v4,v5), ...
+   glBegin(GL_TRIANGLES); 
+       glVertex2f(0.9999,1.0);
+	   glVertex2f(0.9999, 0.9);
+	   glVertex2f(0.9, 0.9);
 
-	//extremitatile
-	double x1, y1;
-	x1 = xx[count-2]; //se sare peste ultimul punct ca sa fie ca in figura, mai la dreapta
-	y1 = yy[0];
+	   glVertex2f(-0.9999, -1.0);
+	   glVertex2f(-0.999, -0.9);
+	   glVertex2f(-0.9, -0.9);
+   glEnd();
+}
 
-	glShadeModel(GL_FLAT);
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(1, 0.1, 0.1);
-	glVertex2f(x1, y1);
-	for (int i = 0; i < count; i++) {
-		if (fabs(yy[i] < 0.25)) {
-			continue;
-		}
-		if (i % 3 == 0) {
-			glColor3f(1, 0.1, 0.1);
-		}
-		else {
-			glColor3f(1, 1, 1);
-		}
-		glVertex2f(xx[i], yy[i]);
-	}
+void Display7() {
+   // trasare patrulatere GL_QUADS : (v0,v1,v2,v3), (v4,v5,v6,v7), ...
+	glColor3f(1, 0.1, 0.1); // rosu
+   glBegin(GL_QUADS); 
+	  glVertex2f(0.9999, 1.0);
+	  glVertex2f(0.9999, 0.68);
+	  glVertex2f(0.68, 0.68);
+	  glVertex2f(0.55, 0.84);
+
+	   
+   glEnd();
+}
+
+void Display8() {
+   // trasare poligon convex GL_QUADS : (v0,v1,v2, ..., v_{n-1})
+	float laturaAlbastru = 0.85;
+	float inaltimeAlbastru= (sqrt(3) / 2) * laturaAlbastru;
+
+	glColor3f(0.2, 0.15, 0.88);
+	glBegin(GL_POLYGON);
+		glVertex2f(laturaAlbastru / 2, inaltimeAlbastru);
+		glVertex2f(laturaAlbastru, 0);
+		glVertex2f(laturaAlbastru / 2, -inaltimeAlbastru);
+		glVertex2f(-laturaAlbastru / 2, -inaltimeAlbastru);
+		glVertex2f(-laturaAlbastru, 0);
+		glVertex2f(-laturaAlbastru / 2, inaltimeAlbastru);
 	glEnd();
 
+	glColor3f(1, 1, 1);
+	float latura = 0.60;
+	float inaltime = (sqrt(3) / 2) * latura;
+	glBegin(GL_POLYGON);
+		glVertex2f(latura/2,inaltime);
+		glVertex2f(latura, 0);
+		glVertex2f(latura/2, -inaltime);
+		glVertex2f(-latura/2, -inaltime);
+		glVertex2f(-latura, 0);
+		glVertex2f(-latura/2, inaltime);
+    glEnd();
+
+	glColor3f(1.0, 0.1, 0.1);
 	glBegin(GL_LINE_LOOP);
-	glColor3f(0.2, 0.15, 0.88); // albastru
-	glVertex2f(x1, y1);
-	for (int i = 0; i < count - 1; i++) {
-		glVertex2f(xx[i], yy[i]);
-	}
+		glVertex2f(latura / 2, inaltime);
+		glVertex2f(latura, 0);
+		glVertex2f(latura / 2, -inaltime);
+		glVertex2f(-latura / 2, -inaltime);
+		glVertex2f(-latura, 0);
+		glVertex2f(-latura / 2, inaltime);
 	glEnd();
-}
+	
 
-//Cicloida
-void Display6(double a, double b) {
-
-	double xmax, ymax;
-	double ratia = 0.05;
-
-	xmax = a*-1 - b + 1;
-	ymax = a - b + 1;
-	double x, y;
-	for (double t = -10 + ratia; t < 10; t += ratia) {
-		x = a*t - b*sin(t);
-		y = a - b*cos(t);
-		xmax = (xmax > x) ? xmax : x;
-		ymax = (ymax > y) ? ymax : y;
-	}
-
-	xmax = xmax*1.1;
-	ymax = ymax*1.1;
-
-	glColor3f(1.0, 0.1, 0.1);
-	glBegin(GL_LINE_STRIP);
-
-	for (double t = -10 + ratia; t < 10; t += ratia) {
-		x = a*t - b*sin(t);
-		y = a - b*cos(t);
-		glVertex2f(x / xmax, y / ymax);
-	}
-
-	glEnd();
-}
-
-//Epicicloida
-void Display7(double R, double r) {
-
-	double xmax, ymax;
-	double x, y;
-	double ratia = 0.05;
-	double pi = 4 * atan(1.0);
-
-	xmax = R + r - r + 1;
-	ymax = R + r - r + 1;
-
-	for (double t = 0; t <= 2 * pi; t += ratia) {
-		x = (R + r)*cos(r / R*t) - r*cos(t + r / R*t);
-		y = (R + r)*sin(r / R*t) - r*sin(t + r / R*t);
-
-		xmax = (xmax > x) ? xmax : x;
-		ymax = (ymax > y) ? ymax : y;
-	}
-
-	printf("Xmax:%f\t Ymax:%f\n", xmax, ymax);
-
-	xmax = xmax*1.1;
-	ymax = ymax*1.1;
-
-	glColor3f(1.0, 0.1, 0.1);
-	glBegin(GL_LINE_STRIP);
-	for (double t = 0; t <= 2 * pi; t += ratia) {
-		x = (R + r)*cos(r / R*t) - r*cos(t + r / R*t);
-		y = (R + r)*sin(r / R*t) - r*sin(t + r / R*t);
-		glVertex2f(x / xmax, y / ymax);
-	}
-
-	glEnd();
-
-}
-
-//Hipocicloida
-void Display8(double R, double r) {
-
-	double xmax, ymax;
-	double x, y;
-	double ratia = 0.05;
-	double pi = 4 * atan(1.0);
-
-	xmax = R - r - r + 1;
-	ymax = R - r - r + 1;
-
-
-	for (double t = 0; t <= 2 * pi; t += ratia) {
-		x = (R - r)*cos(r / R*t) - r*cos(t - r / R*t);
-		y = (R - r)*sin(r / R*t) - r*sin(t - r / R*t);
-
-		xmax = (xmax > x) ? xmax : x;
-		ymax = (ymax > y) ? ymax : y;
-	}
-
-	printf("Xmax:%f\t Ymax:%f\n", xmax, ymax);
-
-	xmax = xmax*2;
-	ymax = ymax*2;
-
-	glColor3f(1.0, 0.1, 0.1);
-	glBegin(GL_LINE_STRIP);
-	for (double t = 0; t <= 2 * pi; t += ratia) {
-		x = (R - r)*cos(r / R*t) - r*cos(t - r / R*t);
-		y = (R - r)*sin(r / R*t) - r*sin(t - r / R*t);
-		glVertex2f(x / xmax, y / ymax);
-	}
-
-	glEnd();
-
-}
-
-//Bernoulli
-void Display9(double a) {
-	double xmax, ymax, xmin, ymin, rmax, rmin, r1, r2;
-	double pi = 4 * atan(1.0);
-	double ratia = 0.001;
-	double t;
-	double r;
-
-	rmax = a * sqrt(2) - 1;
-	for (t = -pi / 4 + ratia; t < pi / 4; t += ratia) {
-		r = a * sqrt(2 * cos(2 * t));
-		rmax = (r > rmax) ? r : rmax;
-	}
-
-	rmax *= 1.1;
-
-	glColor3f(1, 0.1, 0.1); // rosu
-
-	glBegin(GL_LINE_STRIP);
-	for (t = pi / 4 - ratia; t > -pi / 4; t -= ratia) {
-		double x1, y1;
-		r1 = a*sqrt(2 * cos(2 * t)) / rmax;
-
-		x1 = r1*cos(t);
-		y1 = r1*sin(t);
-		glVertex2f(x1, y1);
-	}
-
-	for (t = -pi / 4 + ratia; t < pi / 4; t += ratia) {
-		double x2, y2;
-		r2 = -a * sqrt(2 * cos(2 * t)) / rmax;
-
-		x2 = r2 * cos(t);
-		y2 = r2 * sin(t);
-		glVertex2f(x2, y2);
-	}
-	glEnd();
-}
-
-void Display0(double a) {
-	double  rmax, r;
-	double ratia = 0.05;
-	double t, tmax;
-
-	tmax = 2.95;
-	rmax = a * exp(exp(1) + 1) - 1;
-
-	for (t = 0 + ratia; t < tmax; t += ratia) {
-		r = a * exp(1 + t);
-		rmax = (r > rmax) ? r : rmax;
-	}
-
-	rmax *= 1.1;
-
-	glColor3f(1, 0.1, 0.1); // rosu
-	glBegin(GL_LINE_STRIP);
-	for (t = 0 + ratia; t < tmax; t += ratia) {
-		double x, y;
-
-		r = a * exp(1 + t) / rmax;
-		x = r * cos(t);
-		y = r * sin(t);
-		glVertex2f(x, y);
-	}
-	glEnd();
 }
 
 void Init(void) {
+   // specifica culoarea unui buffer dupa ce acesta
+   // a fost sters utilizand functia glClear. Ultimul
+   // argument reprezinta transparenta (1 - opacitate
+   // completa, 0 - transparenta totala)
+   glClearColor(1.0,1.0,1.0,1.0);
 
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+   // grosimea liniilor
+   glLineWidth(3);
 
-	glLineWidth(1);
+   // dimensiunea punctelor
+   glPointSize(4);
 
-	//   glPointSize(4);
-
-	glPolygonMode(GL_FRONT, GL_LINE);
+   // functia void glPolygonMode (GLenum face, GLenum mode)
+   // controleaza modul de desenare al unui poligon
+   // mode : GL_POINT (numai vf. primitivei) GL_LINE (numai
+   //        muchiile) GL_FILL (poligonul plin)
+   // face : tipul primitivei geometrice dpdv. al orientarii
+   //        GL_FRONT - primitive orientate direct
+   //        GL_BACK  - primitive orientate invers
+   //        GL_FRONT_AND_BACK  - ambele tipuri
+   glPolygonMode(GL_FRONT, GL_LINE);
 }
 
 void Display(void) {
-	glClear(GL_COLOR_BUFFER_BIT);
+   printf("Call Display\n");
 
-	switch (prevKey) {
-	case '1':
-		Display1();
-		break;
-	case '2':
-		Display2();
-		break;
-	case '3':
-		Display3();
-		break;
-	case '4':
-		Display4(0.3, 0.2);
-		break;
-	case '5':
-		Display5(0.2);
-		break;
-	case '6':
-		Display6(0.1, 0.2);
-		break;
-	case '7':
-		Display7(0.1, 0.3);
-		break;
-	case '8':
-		Display8(0.1, 0.3);
-		break;
-	case '9':
-		Display9(0.4);
-		break;
-	case '0':
-		Display0(0.02);
-		break;
+   // sterge buffer-ul indicat
+   glClear(GL_COLOR_BUFFER_BIT);
 
-	default:
-		break;
-	}
+   switch(prevKey) {
+   case '1':
+      Display1();
+      break;
+   case '2':
+      Display2();
+      break;
+   case '3':
+      Display3();
+      break;
+   case '4':
+      Display4();
+      break;
+   case '5':
+      Display5();
+      break;
+   case '6':
+      Display6();
+      break;
+   case '7':
+      Display7();
+      break;
+   case '8':
+      Display8();
+      break;
+   default:
+      break;
+   }
 
-	glFlush();
+   // forteaza redesenarea imaginii
+   glFlush();
 }
 
+/*
+   Parametrii w(latime) si h(inaltime) reprezinta noile
+   dimensiuni ale ferestrei
+*/
 void Reshape(int w, int h) {
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+   printf("Call Reshape : latime = %d, inaltime = %d\n", w, h);
+
+   // functia void glViewport (GLint x, GLint y,
+   //                          GLsizei width, GLsizei height)
+   // defineste poarta de afisare : acea suprafata dreptunghiulara
+   // din fereastra de afisare folosita pentru vizualizare.
+   // x, y sunt coordonatele pct. din stg. jos iar 
+   // width si height sunt latimea si inaltimea in pixeli.
+   // In cazul de mai jos poarta de afisare si fereastra coincid
+   glViewport(0, 0, (GLsizei) w, (GLsizei) h);
 }
 
+/* 
+   Parametrul key indica codul tastei iar x, y pozitia
+   cursorului de mouse
+*/
 void KeyboardFunc(unsigned char key, int x, int y) {
-	prevKey = key;
-	if (key == 27) // escape
-		exit(0);
-	glutPostRedisplay();
+   printf("Ati tastat <%c>. Mouse-ul este in pozitia %d, %d.\n",
+            key, x, y);
+   // tasta apasata va fi utilizata in Display ptr.
+   // afisarea unor imagini
+   prevKey = key;
+   if (key == 27) // escape
+      exit(0);
+   glutPostRedisplay();
 }
 
+/* 
+   Codul butonului poate fi :
+   GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON
+   Parametrul state indica starea: "apasat" GLUT_DOWN sau
+   "eliberat" GLUT_UP
+   Parametrii x, y : coordonatele cursorului de mouse
+*/
 void MouseFunc(int button, int state, int x, int y) {
+   printf("Call MouseFunc : ati %s butonul %s in pozitia %d %d\n",
+      (state == GLUT_DOWN) ? "apasat" : "eliberat",
+      (button == GLUT_LEFT_BUTTON) ? 
+      "stang" : 
+      ((button == GLUT_RIGHT_BUTTON) ? "drept": "mijlociu"),
+      x, y);
 }
 
 int main(int argc, char** argv) {
+   // Initializarea bibliotecii GLUT. Argumentele argc
+   // si argv sunt argumentele din linia de comanda si nu 
+   // trebuie modificate inainte de apelul functiei 
+   // void glutInit(int *argcp, char **argv)
+   // Se recomanda ca apelul oricarei functii din biblioteca
+   // GLUT sa se faca dupa apelul acestei functii.
+   glutInit(&argc, argv);
+   
+   // Argumentele functiei
+   // void glutInitWindowSize (int latime, int latime)
+   // reprezinta latimea, respectiv inaltimea ferestrei
+   // exprimate in pixeli. Valorile predefinite sunt 300, 300.
+   glutInitWindowSize(300, 300);
 
-	glutInit(&argc, argv);
+   // Argumentele functiei
+   // void glutInitWindowPosition (int x, int y)
+   // reprezinta coordonatele varfului din stanga sus
+   // al ferestrei, exprimate in pixeli. 
+   // Valorile predefinite sunt -1, -1.
+   glutInitWindowPosition(100, 100);
 
-	glutInitWindowSize(dim, dim);
+   // Functia void glutInitDisplayMode (unsigned int mode)
+   // seteaza modul initial de afisare. Acesta se obtine
+   // printr-un SAU pe biti intre diverse masti de display
+   // (constante ale bibliotecii GLUT) :
+   // 1. GLUT_SINGLE : un singur buffer de imagine. Reprezinta
+   //    optiunea implicita ptr. nr. de buffere de
+   //    de imagine.
+   // 2. GLUT_DOUBLE : 2 buffere de imagine.
+   // 3. GLUT_RGB sau GLUT_RGBA : culorile vor fi afisate in
+   //    modul RGB.
+   // 4. GLUT_INDEX : modul indexat de selectare al culorii.
+   // etc. (vezi specificatia bibliotecii GLUT)
+   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
 
-	glutInitWindowPosition(100, 100);
+   // Functia int glutCreateWindow (char *name)
+   // creeaza o fereastra cu denumirea data de argumentul
+   // name si intoarce un identificator de fereastra.
+   glutCreateWindow (argv[0]);
 
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+   Init();
 
-	glutCreateWindow(argv[0]);
+   // Functii callback : functii definite in program si 
+   // inregistrate in sistem prin intermediul unor functii
+   // GLUT. Ele sunt apelate de catre sistemul de operare
+   // in functie de evenimentul aparut
 
-	Init();
+   // Functia 
+   // void glutReshapeFunc (void (*Reshape)(int width, int height))
+   // inregistreaza functia callback Reshape care este apelata
+   // oridecate ori fereastra de afisare isi modifica forma.
+   glutReshapeFunc(Reshape);
+   
+   // Functia 
+   // void glutKeyboardFunc (void (*KeyboardFunc)(unsigned char,int,int))
+   // inregistreaza functia callback KeyboardFunc care este apelata
+   // la actionarea unei taste.
+   glutKeyboardFunc(KeyboardFunc);
+   
+   // Functia 
+   // void glutMouseFunc (void (*MouseFunc)(int,int,int,int))
+   // inregistreaza functia callback MouseFunc care este apelata
+   // la apasarea sau la eliberarea unui buton al mouse-ului.
+   glutMouseFunc(MouseFunc);
 
-	glutReshapeFunc(Reshape);
+   // Functia 
+   // void glutDisplayFunc (void (*Display)(void))
+   // inregistreaza functia callback Display care este apelata
+   // oridecate ori este necesara desenarea ferestrei: la 
+   // initializare, la modificarea dimensiunilor ferestrei
+   // sau la apelul functiei
+   // void glutPostRedisplay (void).
+   glutDisplayFunc(Display);
+   
+   // Functia void glutMainLoop() lanseaza bucla de procesare
+   // a evenimentelor GLUT. Din bucla se poate iesi doar prin
+   // inchiderea ferestrei aplicatiei. Aceasta functie trebuie
+   // apelata cel mult o singura data in program. Functiile
+   // callback trebuie inregistrate inainte de apelul acestei
+   // functii.
+   // Cand coada de evenimente este vida atunci este executata
+   // functia callback IdleFunc inregistrata prin apelul functiei
+   // void glutIdleFunc (void (*IdleFunc) (void))
+   glutMainLoop();
 
-	glutKeyboardFunc(KeyboardFunc);
-
-	glutMouseFunc(MouseFunc);
-
-	glutDisplayFunc(Display);
-
-	glutMainLoop();
-
-	return 0;
+   return 0;
 }
