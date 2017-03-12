@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -98,8 +97,6 @@ void Display2() {
 }
 
 double nearestInteger(double number) {
-
-
 	double fractionalPart = number - int(number);
 	if (fractionalPart > 0.5) {
 		return fabs(1.0 - fractionalPart);
@@ -119,15 +116,11 @@ void Display3() {
 
 	glColor3f(1, 0.1, 0.1); // rosu
 	glBegin(GL_LINE_STRIP);
-
 	glVertex2f(0 / xmax, 1 / ymax);
 	for (double x = 0 + ratia; x <= 100; x += ratia) {
 		double distance = nearestInteger(x);
-		//printf("X:%f,Y:%f\n", x / xmax, distance / x / ymax);
 		glVertex2f(x / xmax, distance / x / ymax);
 	}
-
-
 	glEnd();
 }
 
@@ -141,10 +134,9 @@ void Display4(double a, double b) {
 
 	xmax = 2 * (a + b) - 1;
 	ymax = 2 * (a + b) - 1;
-	printf("Xmax:%f\tYmax:%f\n", xmax, ymax);
 
 	double x, y;
-	for (double t = -pi + ratia; t < pi; t += ratia) {
+	for (double t = -pi + ratia; t <= pi + ratia*2; t += ratia) {
 		x = 2 * (a*cos(t) + b)*cos(t);
 		y = 2 * (a*cos(t) + b)*sin(t);
 		xmax = (xmax > x) ? xmax : x;
@@ -155,15 +147,16 @@ void Display4(double a, double b) {
 
 
 	xmax = xmax* 1.1;
-	ymax = ymax * 1.1;
+	//depinde de a si b
+	ymax = ymax * 1.7;
 
 	glColor3f(1, 0.1, 0.1); // rosu
 	glBegin(GL_LINE_STRIP);
 
-	for (double t = -pi + ratia; t < pi; t += ratia) {
+	for (double t = -pi + ratia; t <= pi + ratia*2; t += ratia) {
 		x = 2 * (a*cos(t) + b)*cos(t);
 		y = 2 * (a*cos(t) + b)*sin(t);
-		glVertex2f(x / xmax, y );
+		glVertex2f(x / xmax, y / ymax);
 	}
 	glEnd();
 
@@ -171,61 +164,12 @@ void Display4(double a, double b) {
 
 //Trisectoarea lui Longchamps: 
 void Display5(double a) {
-
 	double pi = 4 * atan(1);
-	double ratia = 0.01;
-	bool color = true;
-	double xmin = 100000;
-	double ymax = -100000;
+	double ratia = 0.0055;
 	double x, y;
 
-	for (double t = -pi / 2 + ratia; t < pi / 2; t += ratia) {
-		x = a / (4 * cos(t)*cos(t) - 3);
-		y = (a* (sin(t) / cos(t))) / (4 * cos(t) * cos(t) - 3);
-		if (x < 0 && y > 0) {
-			xmin = (x < xmin) ? x : xmin;
-			ymax = (y > ymax) ? y : ymax;
-		}
-
-	}
-
-	printf("Xmin:%f\tYmax:%f\n", xmin, ymax);
-
-	
-	glShadeModel(GL_FLAT);
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(1, 0.1, 0.1);
-	glVertex2f(-0.95, 0.97);
-
-	for (double t = -pi / 2 + ratia; t < -pi / 6; t += ratia) {
-
-		if (fabs(t) == pi / 6) {
-			continue;
-		}
-
-		x = 0.2 / (4 * cos(t) * cos(t) - 3);
-		y = 0.2 * tan(t) / (4 * cos(t) * cos(t) - 3);
-		if (fabs(x) > 1 || fabs(y) > 1 || fabs(y) < 0.25)
-			continue;
-
-		if (color) {
-			glColor3f(1, 0.1, 0.1);
-			color = false;
-		}
-		else {
-			glColor3f(1, 1, 1);
-			color = true;
-		}
-		glVertex2f(x, y);
-	}
-
-	glEnd();
-
-
-
-	glBegin(GL_LINE_LOOP);
-	glColor3f(0.2, 0.15, 0.88); // albastru
-	glVertex2f(-0.95, 0.97);
+	int count = 0;
+	double xx[1000], yy[1000];
 	for (double t = -pi / 2 + ratia; t < -pi / 6; t += ratia) {
 		if (fabs(t) == pi / 6) {
 			continue;
@@ -234,12 +178,42 @@ void Display5(double a) {
 		y = 0.2 * tan(t) / (4 * cos(t) * cos(t) - 3);
 		if (fabs(x) > 1 || fabs(y) > 1)
 			continue;
-		glVertex2f(x, y);
+		xx[count] = x;
+		yy[count] = y;
+		count++;
 	}
 
+	//extremitatile
+	double x1, y1;
+	x1 = xx[count-2]; //se sare peste ultimul punct ca sa fie ca in figura, mai la dreapta
+	y1 = yy[0];
+
+	glShadeModel(GL_FLAT);
+	glBegin(GL_TRIANGLE_FAN);
+	glColor3f(1, 0.1, 0.1);
+	glVertex2f(x1, y1);
+	for (int i = 0; i < count; i++) {
+		if (fabs(yy[i] < 0.25)) {
+			continue;
+		}
+		if (i % 3 == 0) {
+			glColor3f(1, 0.1, 0.1);
+		}
+		else {
+			glColor3f(1, 1, 1);
+		}
+		glVertex2f(xx[i], yy[i]);
+	}
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+	glColor3f(0.2, 0.15, 0.88); // albastru
+	glVertex2f(x1, y1);
+	for (int i = 0; i < count - 1; i++) {
+		glVertex2f(xx[i], yy[i]);
+	}
 	glEnd();
 }
-
 
 //Cicloida
 void Display6(double a, double b) {
@@ -308,6 +282,7 @@ void Display7(double R, double r) {
 
 }
 
+//Hipocicloida
 void Display8(double R, double r) {
 
 	double xmax, ymax;
@@ -329,8 +304,8 @@ void Display8(double R, double r) {
 
 	printf("Xmax:%f\t Ymax:%f\n", xmax, ymax);
 
-	xmax = xmax*1.1;
-	ymax = ymax*1.1;
+	xmax = xmax*2;
+	ymax = ymax*2;
 
 	glColor3f(1.0, 0.1, 0.1);
 	glBegin(GL_LINE_STRIP);
@@ -351,58 +326,47 @@ void Display9(double a) {
 	double ratia = 0.001;
 	double t;
 	double r;
-	// calculul valorilor maxime/minime ptr. x si y
-	// aceste valori vor fi folosite ulterior la scalare
+
 	rmax = a * sqrt(2) - 1;
-
-
 	for (t = -pi / 4 + ratia; t < pi / 4; t += ratia) {
 		r = a * sqrt(2 * cos(2 * t));
 		rmax = (r > rmax) ? r : rmax;
 	}
 
-	printf("Rmax:%f\n",rmax);
 	rmax *= 1.1;
-
-	// afisarea punctelor propriu-zise precedata de scalare
 
 	glColor3f(1, 0.1, 0.1); // rosu
 
 	glBegin(GL_LINE_STRIP);
-
-	for (t = pi / 4 - ratia; t > -pi / 4;  t -= ratia) {
+	for (t = pi / 4 - ratia; t > -pi / 4; t -= ratia) {
 		double x1, y1;
 		r1 = a*sqrt(2 * cos(2 * t)) / rmax;
 
 		x1 = r1*cos(t);
 		y1 = r1*sin(t);
 		glVertex2f(x1, y1);
-		printf("%f\t%f\n", x1, y1);
-
 	}
 
-	printf("\n");
-	for (t = -pi / 4 + ratia; t < pi/ 4 ; t += ratia) {
+	for (t = -pi / 4 + ratia; t < pi / 4; t += ratia) {
 		double x2, y2;
 		r2 = -a * sqrt(2 * cos(2 * t)) / rmax;
 
 		x2 = r2 * cos(t);
 		y2 = r2 * sin(t);
 		glVertex2f(x2, y2);
-		printf("%f\t%f\n", x2, y2);
 	}
 	glEnd();
-
 }
 
 void Display0(double a) {
 	double  rmax, r;
 	double ratia = 0.05;
-	double t;
+	double t, tmax;
 
+	tmax = 2.95;
 	rmax = a * exp(exp(1) + 1) - 1;
 
-	for (t = 0 + ratia; t < 2.9; t += ratia) {
+	for (t = 0 + ratia; t < tmax; t += ratia) {
 		r = a * exp(1 + t);
 		rmax = (r > rmax) ? r : rmax;
 	}
@@ -411,11 +375,11 @@ void Display0(double a) {
 
 	glColor3f(1, 0.1, 0.1); // rosu
 	glBegin(GL_LINE_STRIP);
-	for (t = 0 + ratia; t < 2.9; t += ratia) {
+	for (t = 0 + ratia; t < tmax; t += ratia) {
 		double x, y;
 
 		r = a * exp(1 + t) / rmax;
-		x = r * cos(t) ;
+		x = r * cos(t);
 		y = r * sin(t);
 		glVertex2f(x, y);
 	}
