@@ -136,7 +136,7 @@ void Display4(double a, double b) {
 	ymax = 2 * (a + b) - 1;
 
 	double x, y;
-	for (double t = -pi + ratia; t <= pi + ratia*2; t += ratia) {
+	for (double t = -pi + ratia; t < pi; t += ratia) {
 		x = 2 * (a*cos(t) + b)*cos(t);
 		y = 2 * (a*cos(t) + b)*sin(t);
 		xmax = (xmax > x) ? xmax : x;
@@ -151,9 +151,9 @@ void Display4(double a, double b) {
 	ymax = ymax * 1.7;
 
 	glColor3f(1, 0.1, 0.1); // rosu
-	glBegin(GL_LINE_STRIP);
+	glBegin(GL_LINE_LOOP);
 
-	for (double t = -pi + ratia; t <= pi + ratia*2; t += ratia) {
+	for (double t = -pi + ratia; t <= pi ; t += ratia) {
 		x = 2 * (a*cos(t) + b)*cos(t);
 		y = 2 * (a*cos(t) + b)*sin(t);
 		glVertex2f(x / xmax, y / ymax);
@@ -180,6 +180,7 @@ void Display5(double a) {
 			continue;
 		xx[count] = x;
 		yy[count] = y;
+		//printf("X:%f\tY:%f\t\n", x, y);
 		count++;
 	}
 
@@ -192,17 +193,22 @@ void Display5(double a) {
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(1, 0.1, 0.1);
 	glVertex2f(x1, y1);
+	printf("X:%f\tY:%f\t\n", x1, y1);
+	int paint = 2;
 	for (int i = 0; i < count; i++) {
 		if (fabs(yy[i] < 0.25)) {
+			paint = 0;
 			continue;
 		}
-		if (i % 3 == 0) {
+		if (i % 3 == paint) {
 			glColor3f(1, 0.1, 0.1);
 		}
 		else {
 			glColor3f(1, 1, 1);
 		}
 		glVertex2f(xx[i], yy[i]);
+		printf("X:%f\tY:%f\tI:%d\n", xx[i], yy[i],i);
+
 	}
 	glEnd();
 
@@ -213,6 +219,7 @@ void Display5(double a) {
 		glVertex2f(xx[i], yy[i]);
 	}
 	glEnd();
+
 }
 
 //Cicloida
