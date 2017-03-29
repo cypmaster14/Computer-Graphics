@@ -53,7 +53,7 @@ void GrilaCarteziana::deseneaaCerc(double x, double y, double r, int numberOfSeg
 
 	double pi = 4 * atan(1.0);
 
-	glColor3f(1.0, 0.1, 0.1);
+	glColor3ub(71, 71, 71);
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex2f(x, y);
 
@@ -156,11 +156,10 @@ void GrilaCarteziana::writePixel(double i, double j) {
 
 
 void GrilaCarteziana::afisareSegmentDreapta3(double x0, double y0, double xn, double yn) {
-	
 	double dx, dy;
-	
-	dx = abs(xn - x0);
-	dy = abs(yn - y0);
+	//panta dreptei m = rise/run (cat urc/cobor pe linii supra cat merg la stg/dreapta pe coloane)
+	dx = abs(xn - x0);//run
+	dy = abs(yn - y0);//rise
 	
 
 	
@@ -171,7 +170,9 @@ void GrilaCarteziana::afisareSegmentDreapta3(double x0, double y0, double xn, do
 	map<int, int> m;
 	m[x] = y;
 	printf("X:%d Y:%d\n", x, y);
-	this->writePixel(x, y);
+	if (y < this->numarLinii) {
+		this->writePixel(x, y);
+	}
 	while (x < xn) {
 		printf("d:%d\n",d);
 		if (d <= 0) {
@@ -188,13 +189,29 @@ void GrilaCarteziana::afisareSegmentDreapta3(double x0, double y0, double xn, do
 			}
 		}
 		printf("X:%d Y:%d\n", x, y);
-		this->writePixel(x, y);
+		if (y < this->numarLinii) {
+			this->writePixel(x, y);
+		}
 		m[x] = y;
 	}
 
 
 
 	//Desenez segmentul de dreapta
+	//glColor3f(1.0, 0.1, 0.1);
+	//glBegin(GL_LINES); 
+	//double x1, y1;
+	//x1 = this->cx + x0 * this->dc;
+	//y1 = this->cy + y0 * this->de;
+	//glVertex2f(x1, y1);
+	//x1 = this->cx + xn * this->dc;
+	//y1 = this->cy + yn * this->de;
+	//glVertex2f(x1, y1);
+	//glEnd();
+
+}
+
+void GrilaCarteziana::deseneazaSegmentMartor(int x0, int y0, int xn, int yn) {
 	glColor3f(1.0, 0.1, 0.1);
 	glBegin(GL_LINES); 
 	double x1, y1;
@@ -205,9 +222,7 @@ void GrilaCarteziana::afisareSegmentDreapta3(double x0, double y0, double xn, do
 	y1 = this->cy + yn * this->de;
 	glVertex2f(x1, y1);
 	glEnd();
-
 }
-
 
 void GrilaCarteziana::afisareSegmentDreapta3_1(double x0, double y0, double xn, double yn) {
 	double dx, dy;

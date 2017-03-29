@@ -46,11 +46,16 @@ void display1() {
 	GrilaCarteziana* grilaCarteziana = new GrilaCarteziana(numarLinii, numarColoane);
 	printf("Linia1\n");
 	grilaCarteziana->afisareSegmentDreapta3(0,15,15,10);
+	grilaCarteziana->afisareSegmentDreapta3(0, 14, 15, 9);
+	grilaCarteziana->afisareSegmentDreapta3(0, 16, 15, 11);
+	grilaCarteziana->deseneazaSegmentMartor(0, 15, 15, 10);
 	printf("Linia2\n");
 	//grilaCarteziana->afisareSegmentDreapta3_1(15,10,0, 15);
 	//printf("Linia3\n");
 	grilaCarteziana->afisareSegmentDreapta3(0, 0, 15, 7);
 	//grilaCarteziana->afisareCerc4();
+	grilaCarteziana->deseneazaSegmentMartor(0, 15, 15, 10);
+	grilaCarteziana->deseneazaSegmentMartor(0, 0, 15, 7);
 
 }
 

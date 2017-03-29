@@ -29,5 +29,6 @@ public:
 	void deseneaaCerc(double x, double y, double r, int numberOfSegments);
 	void afisareCerc4();
 	void afisarePuncteCerc3(double x, double y3);
+	void deseneazaSegmentMartor(int x0, int y0, int xn, int yn);
 	void cerc(double i, double j);
 };
