@@ -20,10 +20,10 @@ public:
 	GrilaCarteziana(int numarLinii, int numarColoane);
 	void deseneazaLinii();
 	void deseneazaColoane();
-	void writePixel(double i, double j);
-	void afisareSegmentDreapta3(double x0, double y0, double xn, double yn);
+	void writePixel(int i, int j);
+	void afisareSegmentDreapta3(int x0, int y0, int xn, int yn);
 
-	void afisareSegmentDreapta3_1(double x0, double y0, double xn, double yn);
+	void afisareSegmentDreapta3_1(int x0, int y0, int xn, int yn);
 
 
 	void deseneaaCerc(double x, double y, double r, int numberOfSegments);

@@ -145,7 +145,7 @@ void GrilaCarteziana::afisareCerc4() {
 }
 
 
-void GrilaCarteziana::writePixel(double i, double j) {
+void GrilaCarteziana::writePixel(int i, int j) {
 	double x = this->cx + i*this->dc;
 	double y = this->cy + j*this->de;
 	deseneaaCerc(x, y, radius, 10000);
@@ -155,7 +155,7 @@ void GrilaCarteziana::writePixel(double i, double j) {
 
 
 
-void GrilaCarteziana::afisareSegmentDreapta3(double x0, double y0, double xn, double yn) {
+void GrilaCarteziana::afisareSegmentDreapta3(int x0, int y0, int xn, int yn) {
 	double dx, dy;
 	//panta dreptei m = rise/run (cat urc/cobor pe linii supra cat merg la stg/dreapta pe coloane)
 	dx = abs(xn - x0);//run
@@ -224,7 +224,7 @@ void GrilaCarteziana::deseneazaSegmentMartor(int x0, int y0, int xn, int yn) {
 	glEnd();
 }
 
-void GrilaCarteziana::afisareSegmentDreapta3_1(double x0, double y0, double xn, double yn) {
+void GrilaCarteziana::afisareSegmentDreapta3_1(int x0, int y0, int xn, int yn) {
 	double dx, dy;
 	if (x0 < xn && y0 < yn) {
 		dx = xn - x0;
